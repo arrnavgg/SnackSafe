@@ -50,17 +50,41 @@ backend:
         comment: "History endpoint (/api/history) returns a list of previous predictions with all required fields. Note: There is a discrepancy between IDs in predict and history endpoints - predict uses UUID while history uses MongoDB ObjectID."
 
 frontend:
-  - task: "Frontend Testing"
+  - task: "Image Upload Component"
     implemented: true
     working: "NA"
     file: "/app/frontend/src/App.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "testing"
-        comment: "Frontend testing was not performed as per instructions."
+        comment: "Need to test the image upload functionality."
+
+  - task: "Results Display Component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test the results display functionality."
+
+  - task: "History Display Component"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Need to test the history display functionality."
 
 metadata:
   created_by: "testing_agent"
