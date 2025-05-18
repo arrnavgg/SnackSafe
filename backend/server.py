@@ -136,11 +136,19 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.get("/api/history", response_model=PredictionHistory)
 async def get_history():
-    results = await collection.find().sort("timestamp", -1).to_list(length=50)
-    # Convert MongoDB _id to string and handle datetime
+    # Fetch the most recent results from MongoDB
+    cursor = collection.find().sort("timestamp", -1).limit(50)
+    results = await cursor.to_list(length=50)
+    
+    # Convert MongoDB _id to string and ensure consistent id field
     for result in results:
-        result["id"] = str(result.get("_id"))
-        del result["_id"]
+        # Use existing id field if available, otherwise use _id
+        if 'id' not in result:
+            result["id"] = str(result.get("_id"))
+        
+        # Remove MongoDB _id to avoid serialization issues
+        if '_id' in result:
+            del result["_id"]
     
     return {"results": results}
 
