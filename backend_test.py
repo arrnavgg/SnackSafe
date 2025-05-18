@@ -47,8 +47,11 @@ class TestPotatoChipBackend(unittest.TestCase):
         # Check response
         self.assertEqual(response.status_code, 200, f"Prediction failed with status {response.status_code}: {response.text}")
         
-        # Validate response structure
+        # Print full response for debugging
         data = response.json()
+        print("Predict Response:", json.dumps(data, indent=2))
+        
+        # Validate response structure
         self.assertIn('id', data)
         self.assertIn('image_b64', data)
         self.assertIn('is_defective', data)
@@ -81,8 +84,11 @@ class TestPotatoChipBackend(unittest.TestCase):
         response = requests.get(f"{API_URL}/history")
         self.assertEqual(response.status_code, 200)
         
-        # Validate response structure
+        # Print full response for debugging
         data = response.json()
+        print("History Response:", json.dumps(data, indent=2))
+        
+        # Validate response structure
         self.assertIn('results', data)
         self.assertIsInstance(data['results'], list)
         
