@@ -94,9 +94,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Health Check Endpoint"
-    - "Image Prediction Endpoint"
-    - "History Retrieval Endpoint"
+    - "Image Upload Component"
+    - "Results Display Component"
+    - "History Display Component"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
