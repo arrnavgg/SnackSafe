@@ -13,11 +13,6 @@ function App() {
 
   const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
-  // Load prediction history on component mount
-  useEffect(() => {
-    fetchHistory();
-  }, []);
-
   // Fetch prediction history from the backend
   const fetchHistory = useCallback(async () => {
     setIsLoadingHistory(true);
@@ -35,6 +30,11 @@ function App() {
       setIsLoadingHistory(false);
     }
   }, [backendUrl]);
+
+  // Load prediction history on component mount
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
 
   // Handle file selection
   const handleFileChange = (event) => {
@@ -59,22 +59,25 @@ function App() {
     
     setIsUploading(true);
     try {
+      console.log(`Uploading to ${backendUrl}/api/predict`);
       const response = await fetch(`${backendUrl}/api/predict`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to process image');
+        const errorText = await response.text();
+        throw new Error(`Failed to process image: ${errorText}`);
       }
 
       const data = await response.json();
       setResult(data);
       // Refresh history after a new prediction
       fetchHistory();
+      toast.success('Image analyzed successfully!');
     } catch (error) {
       console.error('Error:', error);
-      toast.error('Error uploading image: ' + error.message);
+      toast.error(`Error uploading image: ${error.message}`);
     } finally {
       setIsUploading(false);
     }
