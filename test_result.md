@@ -104,3 +104,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "All backend API endpoints are functioning correctly. The health check, prediction, and history endpoints all return the expected responses. There is a minor discrepancy in how IDs are handled between the predict and history endpoints - predict uses UUID while history uses MongoDB ObjectID. This doesn't affect functionality but could be improved for consistency."
+  - agent: "testing"
+    message: "Starting frontend testing for the potato chip defect detector. Will test the image upload component, results display component, and history display component."
