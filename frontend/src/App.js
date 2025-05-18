@@ -11,21 +11,24 @@ function App() {
   const [history, setHistory] = useState([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-
+  // Get the backend URL from environment variables or use default
+  const backendUrl = process.env.REACT_APP_BACKEND_URL || '/api';
+  
   // Fetch prediction history from the backend
   const fetchHistory = useCallback(async () => {
     setIsLoadingHistory(true);
     try {
-      const response = await fetch(`${backendUrl}/api/history`);
+      console.log(`Fetching history from ${backendUrl}/history`);
+      const response = await fetch(`${backendUrl}/history`);
       if (!response.ok) {
-        throw new Error('Failed to fetch history');
+        throw new Error(`Failed to fetch history: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
-      setHistory(data.results);
+      console.log('History data:', data);
+      setHistory(data.results || []);
     } catch (error) {
       console.error('Error fetching history:', error);
-      toast.error('Failed to load prediction history');
+      toast.error(`Failed to load prediction history: ${error.message}`);
     } finally {
       setIsLoadingHistory(false);
     }
@@ -33,8 +36,21 @@ function App() {
 
   // Load prediction history on component mount
   useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+    // Check if the backend is accessible
+    fetch(`${backendUrl}/health`)
+      .then(response => {
+        if (response.ok) {
+          console.log('Backend health check succeeded');
+          fetchHistory();
+        } else {
+          throw new Error(`Backend health check failed: ${response.status} ${response.statusText}`);
+        }
+      })
+      .catch(error => {
+        console.error('Error connecting to backend:', error);
+        toast.error(`Cannot connect to backend: ${error.message}`);
+      });
+  }, [backendUrl, fetchHistory]);
 
   // Handle file selection
   const handleFileChange = (event) => {
@@ -59,21 +75,25 @@ function App() {
     
     setIsUploading(true);
     try {
-      console.log(`Uploading to ${backendUrl}/api/predict`);
-      const response = await fetch(`${backendUrl}/api/predict`, {
+      console.log(`Uploading to ${backendUrl}/predict`);
+      console.log('File being uploaded:', selectedFile.name, selectedFile.type, selectedFile.size);
+      
+      const response = await fetch(`${backendUrl}/predict`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`Failed to process image: ${errorText}`);
+        throw new Error(`Failed to process image (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('Prediction result:', data);
       setResult(data);
+      
       // Refresh history after a new prediction
-      fetchHistory();
+      setTimeout(() => fetchHistory(), 500);
       toast.success('Image analyzed successfully!');
     } catch (error) {
       console.error('Error:', error);
