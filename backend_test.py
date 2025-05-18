@@ -86,10 +86,14 @@ class TestPotatoChipBackend(unittest.TestCase):
         self.assertIn('results', data)
         self.assertIsInstance(data['results'], list)
         
+        # Print all IDs in the history for debugging
+        print("Prediction ID:", prediction_id)
+        print("History IDs:", [result.get('id') for result in data['results']])
+        
         # Check if our prediction is in the history
         found = False
         for result in data['results']:
-            if result['id'] == prediction_id:
+            if result.get('id') == prediction_id:
                 found = True
                 break
         
